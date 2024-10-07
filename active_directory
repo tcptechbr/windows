@@ -9,5 +9,14 @@ $dataAtual = Get-Date
 # Busca todos os usuários ativos que têm a senha configurada para nunca expirar
 $usuarios = Get-ADUser -Filter {Enabled -eq $true -and PasswordNeverExpires -eq $true} -Properties PasswordNeverExpires, LastLogonDate
 
-# Exibe os resultados
+## Busca Hosts ativos
 $usuarios | Select-Object Name, SamAccountName, LastLogonDate | Format-Table -AutoSize
+
+$computers = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
+foreach ($computer in $computers) {
+    if (Test-Connection -ComputerName $computer -Count 2 -Quiet) {
+        Write-Output "$computer está ativo."
+    } else {
+        Write-Output "$computer não está ativo."
+    }
+}
