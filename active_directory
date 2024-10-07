@@ -1,3 +1,5 @@
+#############################################################################################################
+
 ## Lista usuários ativos com "senha nunca expirar"
 
 # Importa o módulo do Active Directory
@@ -8,6 +10,9 @@ $dataAtual = Get-Date
 
 # Busca todos os usuários ativos que têm a senha configurada para nunca expirar
 $usuarios = Get-ADUser -Filter {Enabled -eq $true -and PasswordNeverExpires -eq $true} -Properties PasswordNeverExpires, LastLogonDate
+
+
+#############################################################################################################
 
 ## Busca Hosts ativos
 $usuarios | Select-Object Name, SamAccountName, LastLogonDate | Format-Table -AutoSize
@@ -20,3 +25,31 @@ foreach ($computer in $computers) {
         Write-Output "$computer não está ativo."
     }
 }
+#############################################################################################################
+
+# Obtenha todos os computadores do AD
+$computers = Get-ADComputer -Filter * | Select-Object -ExpandProperty Name
+
+# Crie uma lista para armazenar computadores ativos
+$activeComputers = @()
+
+foreach ($computer in $computers) {
+    if (Test-Connection -ComputerName $computer -Count 2 -Quiet) {
+        $activeComputers += $computer
+    }
+}
+
+# Exiba os computadores ativos
+$activeComputers
+
+#############################################################################################################
+
+# Busca Hosts Sem logins 45 dias
+
+Import-Module ActiveDirectory
+$days = 45
+$date = (Get-Date).AddDays(-$days)
+Get-ADUser -Filter {LastLogonDate -lt $date} -Properties LastLogonDate | Select-Object Name, LastLogonDate
+$days = 45
+$date = (Get-Date).AddDays(-$days)
+Get-ADComputer -Filter {LastLogonDate -lt $date} -Properties LastLogonDate | Select-Object Name, LastLogonDate
