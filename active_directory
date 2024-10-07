@@ -44,12 +44,11 @@ $activeComputers
 
 #############################################################################################################
 
-# Busca Hosts Sem logins 45 dias
+# Busca Usuários Sem logins 45 dias
 
 Import-Module ActiveDirectory
 $days = 45
 $date = (Get-Date).AddDays(-$days)
-Get-ADUser -Filter {LastLogonDate -lt $date} -Properties LastLogonDate | Select-Object Name, LastLogonDate
-$days = 45
-$date = (Get-Date).AddDays(-$days)
-Get-ADComputer -Filter {LastLogonDate -lt $date} -Properties LastLogonDate | Select-Object Name, LastLogonDate
+Get-ADUser -Filter {Enabled -eq $true -and LastLogonDate -lt $date} -Properties LastLogonDate | Select-Object Name, LastLogonDate
+
+#############################################################################################################
