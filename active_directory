@@ -1,1 +1,13 @@
+## Lista usuários ativos com "senha nunca expirar"
 
+# Importa o módulo do Active Directory
+Import-Module ActiveDirectory
+
+# Define a data atual
+$dataAtual = Get-Date
+
+# Busca todos os usuários ativos que têm a senha configurada para nunca expirar
+$usuarios = Get-ADUser -Filter {Enabled -eq $true -and PasswordNeverExpires -eq $true} -Properties PasswordNeverExpires, LastLogonDate
+
+# Exibe os resultados
+$usuarios | Select-Object Name, SamAccountName, LastLogonDate | Format-Table -AutoSize
