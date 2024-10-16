@@ -52,3 +52,15 @@ $date = (Get-Date).AddDays(-$days)
 Get-ADUser -Filter {Enabled -eq $true -and LastLogonDate -lt $date} -Properties LastLogonDate | Select-Object Name, LastLogonDate
 
 #############################################################################################################
+
+
+##  BUSCA USUARIOS QUE NAO FIZERAM LOGINS NOS ULTIMOS 30 DIAS
+
+# Definindo a data de corte
+$dataLimite = (Get-Date).AddDays(-30)
+
+# Buscando usuários no Active Directory
+$usuariosInativos = Get-ADUser -Filter { LastLogonDate -lt $dataLimite -and Enabled -eq $true } -Properties LastLogonDate
+
+# Exibindo os resultados
+$usuariosInativos | Select-Object SamAccountName, LastLogonDate | Format-Table -AutoSize
